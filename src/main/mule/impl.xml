@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="implSub_Flow" doc:id="fde369e4-bda0-4b61-8a47-62c5e19c9ff2" >
+		<ee:transform doc:name="ODI Scenario Payload" doc:id="8dfe14c7-e2a6-4718-a4ca-2aa9f05c1887" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/xml writeDeclaration=false
+ns soapenv http://schemas.xmlsoap.org/soap/envelope/
+ns odi xmlns.oracle.com/odi/OdiInvoke/
+---
+soapenv#Envelope : {
+	soapenv#Header: {
+	},
+	soapenv#Body: {
+		odi#OdiStartScenRequest: {
+			Credentials: {
+				OdiUser: Mule::p('odi.user'),
+				OdiPassword: Mule::p('odi.password'),
+				WorkRepository: Mule::p('odi.workrepository')
+			},
+			Request: {
+				ScenarioName: payload.'odi_comp_name',
+				ScenarioVersion: payload.'odi_comp_version',
+				Context: payload.'odi_context',
+				Synchronous: "true",
+				SessionName: now(),
+				Keywords: "",
+				(payload mapObject ((val, key) -> {
+					( Variables: {
+						"Name": upper(key),
+						"Value": val
+					}) if(not isBlank(val))
+				}
+            )),
+				LogLevel: "5"
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="bfb6d677-e704-4c68-aa06-019647f18c69" message="#[payload]"/>
+		<http:request method="POST" doc:name="Execute ODI Scenario" doc:id="eff38d8b-da22-4749-a5f0-c7042bf1e563" config-ref="HTTP_Request_configuration" path="${odi.soapservice.path}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	SOAPAction : "invokeStartScen"
+}]]]></http:headers>
+		</http:request>
+	</sub-flow>
+</mule>

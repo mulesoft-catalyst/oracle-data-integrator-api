@@ -1,0 +1,16 @@
+api:
+  name: "oracle-data-integrator-system-api"
+  version: "v1"
+  id: "000000"
+  
+http:
+  port: "8081"
+
+odi:
+  user: "ODIUSER"
+  password: "ODIPWD"
+  workrepository: "WORKREP"
+  soapservice:
+    path: "/oraclediagent/OdiInvoke"
+    server: "soapservice.mycompany.com"
+    port: "20910"

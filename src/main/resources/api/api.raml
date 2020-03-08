@@ -1,0 +1,75 @@
+#%RAML 1.0
+title: oracle-data-integrator-system-api
+baseUri: http://localhost:8081
+
+types:
+  ODIJobType:
+    type: object
+    properties:
+      odi_comp_name?: string | nil
+      odi_comp_version?: string | nil
+      callback_alarm?: string | nil
+      source_secondary_name?: string | nil
+      target_name?: string | nil
+      source_db_system?: string | nil
+      target_intermediary_name?: string | nil
+      target_type?: string | nil
+      target_db_system?: string | nil
+      source_type?: string | nil
+      truncate_append?: string | nil
+      last_run_time?: string | nil
+      odi_agent_port?: string | nil
+      check_zero_record?: string | nil
+      odi_context?: string | nil
+      source_intermediary_name?: string | nil
+      target_column_name?: string | nil
+      source_secondary_column_name?: string | nil
+      source_name?: string | nil
+      source_column_name?: string | nil
+      odi_agent_host?: string | nil
+
+  ResponseType:
+    type: object
+    properties:
+      status: string
+      message: string
+      transaction_id: string
+/execute:
+  /scenario:
+    post:
+      body:
+        application/json:
+          type: ODIJobType
+          example: {
+                      "odi_comp_name": "ODI_COMP_NAME",
+                      "odi_comp_version": "001",
+                      "callback_alarm": null,
+                      "source_secondary_name": "",
+                      "target_name": "TARGET_NAME",
+                      "source_db_system": "SRC",
+                      "target_intermediary_name": "",
+                      "target_type": "TABLE",
+                      "target_db_system": "TGT",
+                      "source_type": "TABLE",
+                      "truncate_append": "",
+                      "last_run_time": "02-NOV-16",
+                      "odi_agent_port": "11590",
+                      "check_zero_record": "N",
+                      "odi_context": "ODI_CONTEXT",
+                      "source_intermediary_name": "",
+                      "target_column_name": "",
+                      "source_secondary_column_name": "",
+                      "source_name": "REPADMIN.ODI_DATA_MOVEMENT_HISTORY_V",
+                      "source_column_name": "",
+                      "odi_agent_host": "xyztst01.mycompany.com"
+                    }
+      responses:
+        200:
+          body:
+            application/json:
+              type: ResponseType
+        400: 
+          body:
+            application/json:
+              type: ResponseType
+            
